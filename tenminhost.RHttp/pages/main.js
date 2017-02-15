@@ -19,7 +19,7 @@
             else {
                 title.text('Drag and drop the file');
                 var dropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-                    url: "http://10min.host/upload", // Set the url
+                    url: "/upload", // Set the url
                     maxFiles: 1,
                     maxFileSize: 500,
                     previewTemplate: template,

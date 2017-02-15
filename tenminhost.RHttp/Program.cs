@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Web;
 using RHttpServer;
 
 namespace tenminhost.RHttp
@@ -32,7 +33,7 @@ namespace tenminhost.RHttp
 
             server.Get("/:file", (req, res) =>
             {
-                var filename = req.Params["file"];
+                var filename = HttpUtility.UrlDecode(req.Params["file"]);
                 if (File.Exists(uploadFolder + filename))
                 {
                     res.RenderPage("pages/index.ecs", new RenderParams
@@ -50,7 +51,7 @@ namespace tenminhost.RHttp
 
             server.Get("/:file/download", (req, res) =>
             {
-                var filename = uploadFolder + req.Params["file"];
+                var filename = uploadFolder + HttpUtility.UrlDecode(req.Params["file"]);
                 if (File.Exists(filename))
                     res.Download(filename);
                 else
@@ -72,12 +73,15 @@ namespace tenminhost.RHttp
                     return s;
                 }, 0x7D000);
                 if (!sa) res.SendString("Error occurred while saving", status: 413);
-                else res.SendString(fname);
+                else
+                {
+                    res.SendString(fname);
+                    File.AppendAllText("uploadedfiles.txt", DateTime.Now.ToString("g") + "\t" + fname.Substring(5));
+                }
             });
 
             //server.Options("/upload", (req, res) =>
             //{
-            //    res.AddHeader("Access-Control-Allow-Origin", allowedOrigin);
             //    res.AddHeader("Access-Control-Allow-Methods", "POST");
             //    res.AddHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Cache-Control, X-Requested-With");
             //    res.SendString("");
@@ -87,6 +91,7 @@ namespace tenminhost.RHttp
             cleaner.Start();
 
             server.Start();
+            Console.WriteLine("Started: " + DateTime.Now.ToString("R"));
         }
 
         private static bool FreeSpace()

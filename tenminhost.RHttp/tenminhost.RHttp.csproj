@@ -37,15 +37,17 @@
       <HintPath>..\packages\HttpMultipartParser.2.2.3\lib\net452\HttpMultipartParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RHttpServer, Version=1.0.4.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RHttpServer.1.0.4.3\lib\net452\RHttpServer.dll</HintPath>
+    <Reference Include="RHttpServer, Version=1.0.4.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RHttpServer.1.0.4.4\lib\net452\RHttpServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceStack.Text, Version=4.5.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\ServiceStack.Text.4.5.0\lib\net45\ServiceStack.Text.dll</HintPath>
+    <Reference Include="ServiceStack.Text, Version=4.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Text.4.5.4\lib\net45\ServiceStack.Text.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
