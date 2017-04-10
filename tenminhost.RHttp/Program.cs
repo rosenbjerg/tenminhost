@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Web;
 using RHttpServer;
 
@@ -8,9 +9,9 @@ namespace tenminhost.RHttp
     internal class Program
     {
         private static readonly Random Random = new Random();
-        private static readonly string Root = Path.GetPathRoot(Path.GetFullPath("Server.exe"));
-        private static readonly DriveInfo Di = new DriveInfo(Root);
-        private const long FreeLimit = 0x140000000;
+        private static readonly DirectoryInfo Di = new DirectoryInfo("./uploads/");
+        private const long MaxUseLimit = 0x3AAAAAAA;
+        
 
         public static void Main(string[] args)
         {
@@ -53,7 +54,7 @@ namespace tenminhost.RHttp
             {
                 var filename = uploadFolder + HttpUtility.UrlDecode(req.Params["file"]);
                 if (File.Exists(filename))
-                    res.Download(filename);
+                    res.Download(filename, filename.Substring(5));
                 else
                     res.Redirect("/");
             });
@@ -64,7 +65,7 @@ namespace tenminhost.RHttp
                 {
                     res.SendString("Error, server is full", status: 400);
                     return;
-                }
+                } 
                 var fname = "";
                 var sa = await req.SaveBodyToFile("./uploads", s =>
                 {
@@ -76,7 +77,7 @@ namespace tenminhost.RHttp
                 else
                 {
                     res.SendString(fname);
-                    File.AppendAllText("uploadedfiles.txt", DateTime.Now.ToString("g") + "\t" + fname.Substring(5));
+                    File.AppendAllText("uploadedfiles.txt", DateTime.Now.ToString("g") + "\t" + fname.Substring(5) + "\n");
                 }
             });
 
@@ -96,7 +97,12 @@ namespace tenminhost.RHttp
 
         private static bool FreeSpace()
         {
-            return Di.AvailableFreeSpace > FreeLimit;
+            return GetDirectorySize(Di) < MaxUseLimit;
+        }
+
+        private static long GetDirectorySize(DirectoryInfo directory)
+        {
+            return directory.GetDirectories().Sum(dir => GetDirectorySize(dir)) + directory.GetFiles().Sum(file => file.Length);
         }
 
         private static string GetRandomString(int length)
