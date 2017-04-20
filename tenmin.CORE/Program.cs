@@ -1,40 +1,42 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Web;
-using RedHttpServer.Response;
+using RedHttpServer;
+using RedHttpServer.Rendering;
+using tenminhost.RHttp;
 
-namespace tenminhost.RHttp
+namespace tenmin.CORE
 {
     internal class Program
     {
         private static readonly Random Random = new Random();
         private static readonly DirectoryInfo Di = new DirectoryInfo("./uploads/");
         private const long MaxUseLimit = 0x3AAAAAAA;
-        
+
 
         public static void Main(string[] args)
         {
-            var server = new RedHttpServer.RedHttpServer(5001, "");
+            var server = new RedHttpServer.RedHttpServer(5001);
             const string uploadFolder = "./uploads/";
+            Directory.CreateDirectory(uploadFolder);
 
             server.Get("/", (req, res) =>
             {
                 res.RenderPage("pages/index.ecs", new RenderParams
-                    {
-                        {"id", ""},
-                        {"canUpload", FreeSpace()}
-                    });
+                {
+                    {"id", ""},
+                    {"canUpload", FreeSpace()}
+                });
             });
 
-            server.Get("/favicon.ico", (req, res) =>
-            {
-                res.SendFile("pages/favicon.ico");
-            });
+            //server.Get("/favicon.ico", (req, res) =>
+            //{
+            //    res.SendFile("pages/favicon.ico");
+            //});
 
             server.Get("/:file", (req, res) =>
             {
-                var filename = HttpUtility.UrlDecode(req.Params["file"]);
+                var filename = System.Net.WebUtility.UrlDecode(req.Params["file"]);
                 if (File.Exists(uploadFolder + filename))
                 {
                     res.RenderPage("pages/index.ecs", new RenderParams
@@ -52,7 +54,7 @@ namespace tenminhost.RHttp
 
             server.Get("/:file/download", (req, res) =>
             {
-                var filename = uploadFolder + HttpUtility.UrlDecode(req.Params["file"]);
+                var filename = uploadFolder + System.Net.WebUtility.UrlDecode(req.Params["file"]);
                 if (File.Exists(filename))
                     res.Download(filename, filename.Substring(5));
                 else
@@ -63,9 +65,9 @@ namespace tenminhost.RHttp
             {
                 if (!FreeSpace())
                 {
-                    res.SendString("Error, server is full", status: 400);
+                    res.SendString("Error, server is temporarily full", status: 400);
                     return;
-                } 
+                }
                 var fname = "";
                 var sa = await req.SaveBodyToFile("./uploads", s =>
                 {
@@ -80,19 +82,13 @@ namespace tenminhost.RHttp
                     File.AppendAllText("uploadedfiles.txt", DateTime.Now.ToString("g") + "\t" + fname.Substring(5) + "\n");
                 }
             });
-
-            //server.Options("/upload", (req, res) =>
-            //{
-            //    res.AddHeader("Access-Control-Allow-Methods", "POST");
-            //    res.AddHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Cache-Control, X-Requested-With");
-            //    res.SendString("");
-            //});
-
+            
             var cleaner = new Cleaner("./uploads", 13);
+            
             cleaner.Start();
-
             server.Start();
             Console.WriteLine("Started: " + DateTime.Now.ToString("R"));
+            Console.ReadKey();
         }
 
         private static bool FreeSpace()
