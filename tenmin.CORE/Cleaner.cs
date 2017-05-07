@@ -2,8 +2,9 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using RedHttpServerCore.Plugins.Interfaces;
 
-namespace tenminhost.RHttp
+namespace tenmin.CORE
 {
     class Cleaner
     {

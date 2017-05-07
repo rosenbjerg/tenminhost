@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using RedHttpServer;
-using RedHttpServer.Rendering;
-using tenminhost.RHttp;
+using RedHttpServerCore;
+using RedHttpServerCore.Plugins;
+using RedHttpServerCore.Plugins.Interfaces;
+using RedHttpServerCore.Response;
 
 namespace tenmin.CORE
 {
@@ -16,13 +17,15 @@ namespace tenmin.CORE
 
         public static void Main(string[] args)
         {
-            var server = new RedHttpServer.RedHttpServer(5001);
+            var server = new RedHttpServer(5001);
+            var logger = new FileLogging("./LOG");
+            server.Plugins.Register<ILogging, FileLogging>(logger);
             const string uploadFolder = "./uploads/";
             Directory.CreateDirectory(uploadFolder);
 
-            server.Get("/", (req, res) =>
+            server.Get("/", async (req, res) =>
             {
-                res.RenderPage("pages/index.ecs", new RenderParams
+                await res.RenderPage("pages/index.ecs", new RenderParams
                 {
                     {"id", ""},
                     {"canUpload", FreeSpace()}
@@ -34,12 +37,12 @@ namespace tenmin.CORE
             //    res.SendFile("pages/favicon.ico");
             //});
 
-            server.Get("/:file", (req, res) =>
+            server.Get("/:file", async (req, res) =>
             {
                 var filename = System.Net.WebUtility.UrlDecode(req.Params["file"]);
                 if (File.Exists(uploadFolder + filename))
                 {
-                    res.RenderPage("pages/index.ecs", new RenderParams
+                    await res.RenderPage("pages/index.ecs", new RenderParams
                     {
                         {"id", filename},
                         {"canUpload", false}
@@ -47,43 +50,43 @@ namespace tenmin.CORE
                 }
                 else
                 {
-                    res.Redirect("/");
+                    await res.Redirect("/");
                 }
 
             });
 
-            server.Get("/:file/download", (req, res) =>
+            server.Get("/:file/download", async (req, res) =>
             {
                 var filename = uploadFolder + System.Net.WebUtility.UrlDecode(req.Params["file"]);
                 if (File.Exists(filename))
-                    res.Download(filename, filename.Substring(5));
+                    await res.Download(filename);
                 else
-                    res.Redirect("/");
+                    await res.Redirect("/");
             });
 
             server.Post("/upload", async (req, res) =>
             {
-                if (!FreeSpace())
+                if (FreeSpace())
                 {
-                    res.SendString("Error, server is temporarily full", status: 400);
-                    return;
+                    var fname = "";
+                    var sa = await req.SaveBodyToFile(uploadFolder, s =>
+                    {
+                        s = $"{GetRandomString(4)}-{s}";
+                        fname = s;
+                        return s;
+                    }, 0x7D000);
+                    if (!sa) await res.SendString("Error occurred while saving", status: 413);
+                    else
+                    {
+                        await res.SendString(fname);
+                        logger.Log("UPL", fname.Substring(5));
+                    }
                 }
-                var fname = "";
-                var sa = await req.SaveBodyToFile("./uploads", s =>
-                {
-                    s = $"{GetRandomString(4)}-{s}";
-                    fname = s;
-                    return s;
-                }, 0x7D000);
-                if (!sa) res.SendString("Error occurred while saving", status: 413);
                 else
-                {
-                    res.SendString(fname);
-                    File.AppendAllText("uploadedfiles.txt", DateTime.Now.ToString("g") + "\t" + fname.Substring(5) + "\n");
-                }
+                    await res.SendString("Error, server is temporarily full", status: 400);
             });
             
-            var cleaner = new Cleaner("./uploads", 13);
+            var cleaner = new Cleaner(uploadFolder, 12);
             
             cleaner.Start();
             server.Start();
