@@ -32,11 +32,6 @@ namespace tenmin.CORE
                 });
             });
 
-            //server.Get("/favicon.ico", (req, res) =>
-            //{
-            //    res.SendFile("pages/favicon.ico");
-            //});
-
             server.Get("/:file", async (req, res) =>
             {
                 var filename = System.Net.WebUtility.UrlDecode(req.Params["file"]);
@@ -109,7 +104,7 @@ namespace tenmin.CORE
             var chars = new char[length];
             for (var i = 0; i < length; i++)
             {
-                var num = Random.Next(0, 26); // Zero to 25
+                var num = Random.Next(0, 26);
                 chars[i] = (char)('a' + num);
             }
             return new string(chars);

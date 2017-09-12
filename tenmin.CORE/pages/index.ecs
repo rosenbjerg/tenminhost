@@ -89,39 +89,33 @@
             }
             else{
                 title.text('Drag and drop the file');
-                var dropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-                    url: "/upload", // Set the url
+                var dropzone = new Dropzone(document.body, {
+                    url: "/upload", 
                     maxFiles: 1,
                     maxFileSize: 500,
                     previewTemplate: template,
-                    autoQueue: false, // Make sure the files aren't queued until manually added
-                    previewsContainer: "#previewDiv", // Define the container to display the previews
-                    clickable: "#icon" // Define the element that should be used as click trigger to select files.
+                    autoQueue: false,
+                    previewsContainer: "#previewDiv", 
+                    clickable: "#icon" 
                 });
-
                 dropzone.on("success", function(file, responseText) {
                     window.location.replace("/" + responseText);
                 });
-
                 dropzone.on("maxfilesexceeded", function(file) {
                     dropzone.removeAllFiles();
                     dropzone.addFile(file);
                 });
-
                 dropzone.on("addedfile", function(file) {
                     file.previewElement.querySelector(".start").onclick = function() { dropzone.enqueueFile(file); };
                 });
-
                 dropzone.on("totaluploadprogress", function(progress) {
                     var bar = document.querySelector(".progress-bar");
                     if (bar) bar.style.width = progress + "%";
                 });
-
                 dropzone.on("sending", function(file) {
                     document.querySelector(".progress").style.opacity = "1";
                     file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
                 });
-
                 dropzone.on("queuecomplete", function(progress) {
                     document.querySelector(".progress").style.opacity = "0";
                 });
