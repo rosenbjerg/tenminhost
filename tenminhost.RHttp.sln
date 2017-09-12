@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tenminhost.RHttp", "tenminhost.RHttp\tenminhost.RHttp.csproj", "{8BFCA4B8-0A9C-4842-86F0-200682EC93D0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tenmin.CORE", "tenmin.CORE\tenmin.CORE.csproj", "{E9A291B7-8067-4588-A87B-6146B1ED2215}"
 EndProject
 Global
