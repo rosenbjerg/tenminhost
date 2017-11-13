@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.2.0/min/dropzone.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" async="async"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.2.0/min/dropzone.min.js"></script>
+    <title>10min.host - Temporary file hosting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+    <form id="dropzone">
+        <div class="inner">
+            <i class="material-icons huge">cloud_upload</i>
+            <div id="preview"></div>
+        </div>
+    </form>
+
+
+    <template id="preview-template">
+        <div class="preview">
+            <strong><p class="name truncate" data-dz-name></p></strong>
+            <div>
+                <p class="size" data-dz-size></p>
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="progress-bar progress-bar-success" style="width:0;" data-dz-uploadprogress></div>
+                </div>
+            </div>
+            <!--<div>-->
+                <!--<button class="button-primary start">Start</button>-->
+                <!--<button data-dz-remove>Cancel</button>-->
+            <!--</div>-->
+        </div>
+    </template>
+
+
+    <script src="main.js"></script>
+</body>
+</html>

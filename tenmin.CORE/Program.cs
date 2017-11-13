@@ -17,20 +17,10 @@ namespace tenmin.CORE
 
         public static void Main(string[] args)
         {
-            var server = new RedHttpServer(5001);
-            var logger = new FileLogging("./LOG");
-            server.Plugins.Register<ILogging, FileLogging>(logger);
+            var server = new RedHttpServer(5001, "./public");
             const string uploadFolder = "./uploads/";
             Directory.CreateDirectory(uploadFolder);
 
-            server.Get("/", async (req, res) =>
-            {
-                await res.RenderPage("pages/index.ecs", new RenderParams
-                {
-                    {"id", ""},
-                    {"canUpload", FreeSpace()}
-                });
-            });
 
             server.Get("/:file", async (req, res) =>
             {
@@ -61,24 +51,8 @@ namespace tenmin.CORE
 
             server.Post("/upload", async (req, res) =>
             {
-                if (FreeSpace())
-                {
-                    var fname = "";
-                    var sa = await req.SaveBodyToFile(uploadFolder, s =>
-                    {
-                        s = $"{GetRandomString(4)}-{s}";
-                        fname = s;
-                        return s;
-                    }, 0x7D000);
-                    if (!sa) await res.SendString("Error occurred while saving", status: 413);
-                    else
-                    {
-                        await res.SendString(fname);
-                        logger.Log("UPL", fname.Substring(5));
-                    }
-                }
-                else
-                    await res.SendString("Error, server is temporarily full", status: 400);
+                var form = await req.GetFormDataAsync();
+                Console.WriteLine(form);
             });
             
             var cleaner = new Cleaner(uploadFolder, 12);
