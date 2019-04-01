@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Download {{ Name }} - 10min.host</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Unica+One|Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="container">
+    <div class="title">10min.host</div>
+
+    <div>
+        <a target="_blank" href="/download/{{ FullName }}">
+            <i id="icon" class="material-icons" title="Click to download the file">cloud_download</i>
+        </a>
+    </div>
+
+    <div class="small">
+        <div>{{ Name }} ({{ Size }})</div>
+        <div id="status">{{ Uploaded }}</div>
+        <div id="warning"></div>
+    </div>
+</div>
+
+<script>
+    'use strict';
+
+    const uploaded = {{ UploadedSecondsAgo }};
+    let expires = 600 - uploaded;
+
+
+    const status = document.getElementById('status');
+    const warning = document.getElementById('warning');
+
+    const formatTime = exp => {
+        if (exp < 10)
+            return `Expires in ${exp} seconds!`;
+        if (exp < 60)
+            return `Expires in ${exp} seconds`;
+        return `Expires in ${parseInt(exp / 60)} minutes`;
+    };
+
+    setInterval(() => {
+        expires--;
+        if (expires < 1) {
+            location.replace('/');
+        }
+        if (expires < 5) {
+            warning.innerText = 'File is getting deleted now...'
+        }
+        if (expires < 60 || expires % 30 === 0)
+            status.innerText = formatTime(expires);
+    }, 1000);
+
+    status.innerText = formatTime(expires);
+
+</script>
+</body>
+</html>

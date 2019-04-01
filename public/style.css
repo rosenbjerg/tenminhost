@@ -1,0 +1,35 @@
+body, html, #outer {
+    height: 100%;
+    max-width: 100%;
+    display: grid;
+    margin: 0;
+}
+
+.title {
+    text-align: center;
+    font-family: 'Unica One', cursive;
+    font-size: 3rem;
+}
+#icon {
+    font-size: 25vmax;
+    cursor: pointer;
+    transition: color 200ms ease;
+    color: #212121;
+}
+#icon:hover {
+    color: #0D47A1;
+}
+
+#container {
+    margin: auto;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+}
+#file-input {
+    display: none;
+}
+.small {
+    font-size: 11pt;
+    color: rgba(0,0,0, 0.5);
+    width: 100vw;
+}

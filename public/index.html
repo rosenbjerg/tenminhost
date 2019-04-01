@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>10min.host - Temporary file hosting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Unica+One|Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+	
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-85538228-3"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-85538228-3');
+	</script>
+	
+</head>
+<body>
+
+<div id="outer">
+    <div id="container">
+        <div class="title">10min.host</div>
+
+        <label for="file-input">
+            <i id="icon" class="material-icons" title="Click to select file to upload">cloud_upload</i>
+            <div class="small" id="status">No file selected yet</div>
+            <div class="small" id="percentage"></div>
+            <div class="small">
+                Drag and drop the file or click on the cloud to select file
+            </div>
+        </label>
+        <input id="file-input" type="file">
+    </div>
+</div>
+
+<script>
+    'use strict';
+
+    const container = document.getElementById('outer');
+    const input = document.getElementById('file-input');
+    const status = document.getElementById('status');
+    const percentage = document.getElementById('percentage');
+
+    const uploadFile = async file => {
+        status.innerText = `Uploading ${file.name}...`;
+        const formdata = new FormData();
+        formdata.append('file', file);
+
+
+        const request = new XMLHttpRequest();
+        request.upload.addEventListener("progress", e => {
+            if (e.lengthComputable) {
+                percentage.innerText = Math.round(e.loaded * 100 / e.total) + '%';
+            }
+        }, false);
+        request.open('POST', '/upload', true);
+        request.onreadystatechange = async () => {
+            if(request.readyState === 4) {
+                if (request.status === 200) {
+                    const url = request.response;
+                    location.assign(`/${url}`);
+                }
+                else {
+                    status.innerText = request.response;
+                    percentage.innerText = '';
+                }
+            }
+        };
+        request.send(formdata);
+    };
+
+    container.addEventListener('drop', ev => {
+        ev.preventDefault();
+
+        if (ev.dataTransfer.items) {
+            const items = Array.from(ev.dataTransfer.items);
+            const files = items.filter(file => file.kind === 'file');
+            if (files.length !== 0) {
+                uploadFile(ev.dataTransfer.items[0].getAsFile());
+            }
+            ev.dataTransfer.items.clear();
+        }
+        else if (ev.dataTransfer.files) {
+            uploadFile(ev.dataTransfer.files[0]);
+            ev.dataTransfer.clearData();
+        }
+    });
+    container.addEventListener('dragover', ev => ev.preventDefault());
+
+    input.addEventListener('input', ev => {
+        const file = ev.target.files[0];
+        uploadFile(file);
+    });
+
+</script>
+</body>
+</html>
