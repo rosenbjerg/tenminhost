@@ -16,14 +16,14 @@ using Red;
 using Red.HandlebarsRenderer;
 using Validation;
 
-namespace tenminhost
+namespace TenMinHost
 {
     class Program
     {
         const string UploadDirectory = "./uploads";
-        const int MaxFileSize = 367_001_600; // 350 MiB
-        const int DisplayKiBLimit = 1_024_000; // 1 MiB
-        const long MaxSpaceConsumption = 9_126_805_504; // 8.5 GiB
+        const int DisplayKiBLimit = 10_000_000; // 1 MiB
+        const int MaxFileSize = 1_000_000_000; // 1 GiB
+        const long MaxSpaceConsumption = 10_000_000_000; // 10 GiB
 
         private static readonly char[] PossibleRandomCharacters =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
@@ -172,12 +172,10 @@ namespace tenminhost
         {
             var uploaded = (int) DateTime.UtcNow.Subtract(uploadedUtc).TotalSeconds;
             if (uploaded == 0)
-                return "Uploaded just now";
-            if (uploaded < 60)
-                return $"Uploaded {uploaded} seconds age";
-            if (uploaded == 1)
-                return "Uploaded 1 minute ago";
-            return $"Uploaded {uploaded / 60} minutes ago";
+                return "Expires in 10 minutes";
+            if (uploaded > 540)
+                return "Expires in less than a minute!";
+            return $"Expires in {(10 - (uploaded / 60))} minutes";
         }
 
         private static void SetupLogging()

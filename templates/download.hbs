@@ -35,11 +35,12 @@
     const warning = document.getElementById('warning');
 
     const formatTime = exp => {
-        if (exp < 10)
-            return `Expires in ${exp} seconds!`;
-        if (exp < 60)
-            return `Expires in ${exp} seconds`;
-        return `Expires in ${parseInt(exp / 60)} minutes`;
+        if (expires === 0)
+            return "Just expired";
+        if (expires < 60)
+            return `Expires in ${expires} seconds`;
+        return `Expires in ${expires / 60} minutes`;
+        
     };
 
     setInterval(() => {

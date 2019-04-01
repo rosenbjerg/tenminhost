@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace tenminhost
+namespace TenMinHost
 {
     public class FileInfoWrapper
     {
